@@ -1,2 +1,2 @@
 # shortify.io
-Automization of YouTube Short and TikTok Contents 🤖
+Automization of YouTube Shorts and TikTok Contents 🤖
