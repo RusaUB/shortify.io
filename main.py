@@ -102,6 +102,22 @@ def add_transcript_to_video(video_path, transcript):
     except Exception as e:
         print("Error adding transcript to TikTok resolution video:", e)
 
+def edit_transcript(transcript):
+    """
+    Allow the user to edit the transcript.
+
+    Args:
+        transcript (list): A list of tuples containing text and start time of each transcript line.
+
+    Returns:
+        list: The edited transcript.
+    """
+    edited_transcript = []
+    for text, start_time in transcript:
+        print(f"Current text: {text}")
+        new_text = input("Enter the corrected text (press Enter to keep original): ").strip()
+        edited_transcript.append((new_text if new_text else text, start_time))
+    return edited_transcript
 
 if __name__ == "__main__":
     video_url = input("Enter the YouTube video URL: ")
@@ -121,8 +137,12 @@ if __name__ == "__main__":
             transcript = get_transcript(video_id, start_time, end_time)
             
             if transcript:
+                # Allow user to edit the transcript
+                print("\nEditing transcript:")
+                edited_transcript = edit_transcript(transcript)
+                
                 # Add transcript to the trimmed video
-                add_transcript_to_video(trimmed_video_path, transcript)
+                add_transcript_to_video(trimmed_video_path, edited_transcript)
             else:
                 print("Failed to retrieve transcript.")
         else:
