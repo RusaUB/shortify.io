@@ -11,7 +11,6 @@ def download_video(video_url):
 
     Args:
         video_url (str): The URL of the YouTube video.
-        output_path (str, optional): The directory to save the video file. Defaults to the current directory.
 
     Returns:
         str: The path to the downloaded video file, or None if download fails.
@@ -19,11 +18,15 @@ def download_video(video_url):
     try:
         # Download the video from YouTube
         youtube = YouTube(video_url)
-        video = youtube.streams.filter(progressive=True, file_extension='mp4').first()
-        video_path = f"video_{youtube.video_id}.mp4"
-        video.download(filename=video_path, output_path='.')
-        print("Video downloaded successfully.")
-        return video_path
+        video = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution').desc().first()
+        if video:
+            video_path = f"video_{youtube.video_id}.mp4"
+            video.download(filename=video_path, output_path='.')
+            print("Video downloaded successfully.")
+            return video_path
+        else:
+            print("No suitable video stream found.")
+            return None
     except Exception as e:
         print("Error downloading video:", e)
         return None
@@ -86,7 +89,7 @@ def add_transcript_to_video(video_path, transcript):
         video_clip = VideoFileClip(video_path)
 
         # Resize the video to TikTok resolution (1080 x 1920 pixels)
-        resized_clip = video_clip.resize(height=1920, width=1080)  # Width comes first for vertical videos
+        resized_clip = video_clip.resize(width=1080, height=1920)   # Width comes first for vertical videos
 
         # Create text clips for each transcript line
         text_clips = [TextClip(text, fontsize=24, color='white', bg_color='black', method='caption', size=(resized_clip.w, None)).set_position('center').set_duration(end_time - start_time).set_start(start_time)
@@ -96,7 +99,9 @@ def add_transcript_to_video(video_path, transcript):
         final_clip = CompositeVideoClip([resized_clip] + text_clips)
 
         # Write the final video with transcript
-        final_clip.write_videofile("video_with_transcript_tiktok.mp4", codec="libx264", audio_codec="aac")
+        final_clip.write_videofile("video_with_transcript_tiktok.mp4", codec="libx264", audio_codec="aac", bitrate="5000k")
+
+        # Close the video clips
         final_clip.close()
         print("Transcript added to TikTok resolution video successfully.")
     except Exception as e:
