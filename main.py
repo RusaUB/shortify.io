@@ -89,7 +89,7 @@ def add_transcript_to_video(video_path, transcript):
         video_clip = VideoFileClip(video_path)
 
         # Resize the video to TikTok resolution (1080 x 1920 pixels)
-        resized_clip = video_clip.resize(width=1080, height=1920)   # Width comes first for vertical videos
+        resized_clip = video_clip.resize(width=1280, height=720)   # Width comes first for vertical videos
 
         # Create text clips for each transcript line
         text_clips = [TextClip(text, fontsize=24, color='white', bg_color='black', method='caption', size=(resized_clip.w, None)).set_position('center').set_duration(end_time - start_time).set_start(start_time)
@@ -99,13 +99,14 @@ def add_transcript_to_video(video_path, transcript):
         final_clip = CompositeVideoClip([resized_clip] + text_clips)
 
         # Write the final video with transcript
-        final_clip.write_videofile("video_with_transcript_tiktok.mp4", codec="libx264", audio_codec="aac", bitrate="5000k")
+        final_clip.write_videofile("video_with_transcript_tiktok.mp4",audio_codec="aac", bitrate="5000k")
 
         # Close the video clips
         final_clip.close()
         print("Transcript added to TikTok resolution video successfully.")
     except Exception as e:
         print("Error adding transcript to TikTok resolution video:", e)
+
 
 def edit_transcript(transcript):
     """
